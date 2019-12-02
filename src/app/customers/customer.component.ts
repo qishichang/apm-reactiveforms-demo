@@ -3,6 +3,7 @@ import {
   FormGroup,
   FormControl,
   FormBuilder,
+  FormArray,
   Validators,
   AbstractControl,
   ValidatorFn,
@@ -53,6 +54,10 @@ export class CustomerComponent implements OnInit {
     email: 'Please enter a valid email address.',
   };
 
+  get addresses(): FormArray {
+    return this.customerForm.get('addresses') as FormArray;
+  }
+
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
@@ -70,6 +75,7 @@ export class CustomerComponent implements OnInit {
       notification: 'email',
       rating: [null, [ratingRange(1, 5)]],
       sendCatalog: true,
+      addresses: this.fb.array([this.buildAddress()]),
     });
 
     this.customerForm
@@ -80,6 +86,21 @@ export class CustomerComponent implements OnInit {
     emailControl.valueChanges
       .pipe(debounceTime(1000))
       .subscribe(value => this.setMessage(emailControl));
+  }
+
+  addAddress() {
+    this.addresses.push(this.buildAddress());
+  }
+
+  buildAddress(): FormGroup {
+    return this.fb.group({
+      addressType: 'home',
+      street1: '',
+      street2: '',
+      city: '',
+      state: '',
+      zip: '',
+    });
   }
 
   save() {
